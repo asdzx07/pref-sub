@@ -41,6 +41,12 @@
   <h1>🚀 优选 IP 订阅生成器</h1>
   <p class="subtitle">为 VLESS+WS+TLS 节点批量生成优选 IP 订阅 · 配置保存在浏览器本地</p>
 
+  <!-- 本机节点 -->
+  <div class="card" id="localNodesCard">
+    <h2>🖥️ 本机 sb-onekey 节点 <button class="btn btn-gray btn-sm" onclick="loadLocalNodes()">🔄 刷新</button></h2>
+    <div id="localNodes"><p class="hint">正在加载…</p></div>
+  </div>
+
   <!-- 节点配置 -->
   <div class="card">
     <h2>📝 节点配置</h2>
@@ -143,6 +149,11 @@ function saveConfig(silent) {
 async function importFromSub() {
   const url = document.getElementById('subUrl').value.trim();
   if (!url) { alert('请先填写订阅 URL'); return; }
+  // https 页面抓 http 订阅会被浏览器安全策略拦截（Mixed Content），提前拦截给明确提示
+  if (location.protocol === 'https:' && url.startsWith('http://')) {
+    alert('浏览器会拦截 https 页面抓取 http 订阅。\n\n两种办法：\n1. 给 sb-onekey 的订阅服务套 https 再填进来；\n2. 手动填写下面的 UUID / 域名 / 路径（只需要填一次，浏览器会记住）。');
+    return;
+  }
   try {
     const resp = await fetch(url);
     const text = await resp.text();
@@ -151,9 +162,10 @@ async function importFromSub() {
     try { decoded = atob(text.trim()); } catch(e) {}
     const lines = decoded.split('\n').map(l => l.trim()).filter(l => l.startsWith('vless://'));
     if (!lines.length) { alert('订阅中没有找到 vless 链接'); return; }
-    // 取第一条解析
-    const link = lines[0];
-    const m = link.match(/^vless:\/\/([^@]+)@([^:\/?#]+):(\d+)\/?\?([^#]*)#?(.*)$/);
+    // 优先选 type=ws 的那条（优选 IP 场景就是 VLESS+WS+TLS），找不到再用第 1 条
+    const link = lines.find(l => /[?&]type=ws([&#]|$)/.test(l)) || lines[0];
+    // host 支持 [IPv6] 方括号形式
+    const m = link.match(/^vless:\/\/([^@]+)@(\[[^\]]+\]|[^:\/?#]+):(\d+)\/?\?([^#]*)#?(.*)$/);
     if (!m) { alert('解析失败'); return; }
     const params = new URLSearchParams(m[4]);
     document.getElementById('uuid').value = m[1];
@@ -163,7 +175,7 @@ async function importFromSub() {
     document.getElementById('host').value = params.get('sni') || params.get('host') || m[2];
     const info = document.getElementById('nodeInfo');
     info.classList.remove('hidden');
-    info.innerHTML = `✅ 已导入 ${lines.length} 个节点（使用第 1 个的参数）：UUID=${m[1].substring(0,8)}... host=${params.get('sni')||m[2]} path=${params.get('path')||'/'}`;
+    info.innerHTML = `✅ 已导入 ${lines.length} 个节点（使用第 ${lines.indexOf(link)+1} 个的参数）：UUID=${m[1].substring(0,8)}... host=${params.get('sni')||m[2]} path=${params.get('path')||'/'}`;
     saveConfig(true);
   } catch(e) {
     alert('导入失败：' + e.message + '\n（如是跨域问题，请手动填写）');
@@ -202,13 +214,16 @@ function generate() {
   if (!ips.length) { alert('请先填写优选 IP 列表'); return; }
 
   // VLESS 链接
+  // 注意：path 里的 / 保持原样不做 URL 编码（%2F 会被某些客户端误解析，见 2026-10-15 spx 教训）
+  const encNoSlash = s => encodeURIComponent(s).replace(/%2F/gi, '/');
   const vlessLinks = ips.map(({ip, port, label}) => {
-    const p = new URLSearchParams({
-      security: 'tls', sni: cfg.host, type: 'ws',
-      path: cfg.path || '/', host: cfg.host,
-      fp: 'chrome', encryption: 'none'
-    });
-    return `vless://${cfg.uuid}@${ip}:${port}?${p.toString()}#${encodeURIComponent(label)}`;
+    const qs = 'security=tls'
+      + '&sni=' + encodeURIComponent(cfg.host)
+      + '&type=ws'
+      + '&path=' + encNoSlash(cfg.path || '/')
+      + '&host=' + encodeURIComponent(cfg.host)
+      + '&fp=chrome&encryption=none';
+    return `vless://${cfg.uuid}@${ip}:${port}?${qs}#${encodeURIComponent(label)}`;
   });
 
   document.getElementById('out-vless').value = vlessLinks.join('\n');
@@ -218,16 +233,21 @@ function generate() {
   const b64 = btoa(unescape(encodeURIComponent(vlessLinks.join('\n'))));
   document.getElementById('out-base64').value = b64;
 
-  // 二维码（data URI 方式，避免过长）
+  // 二维码：优先完整 Base64 订阅，太长放不下则退到第一条 vless 链接
   document.getElementById('qrcode').innerHTML = '';
   try {
-    new QRCode(document.getElementById('qrcode'), { text: 'data:text/plain;base64,' + b64.substring(0,200), width: 120, height: 120 });
-  } catch(e) {}
+    new QRCode(document.getElementById('qrcode'), { text: b64, width: 160, height: 160 });
+  } catch(e) {
+    try {
+      document.getElementById('qrcode').innerHTML = '';
+      new QRCode(document.getElementById('qrcode'), { text: vlessLinks[0], width: 160, height: 160 });
+    } catch(e2) {}
+  }
 
   // Clash
   let clash = 'proxies:\n';
   ips.forEach(({ip, port, label}, i) => {
-    clash += `  - name: "${label}"\n    type: vless\n    server: ${ip}\n    port: ${port}\n    uuid: ${cfg.uuid}\n    udp: true\n    tls: true\n    servername: ${cfg.host}\n    network: ws\n    ws-opts:\n      path: ${cfg.path || '/'}\n      headers:\n        Host: ${cfg.host}\n`;
+    clash += `  - name: "${label}"\n    type: vless\n    server: ${ip}\n    port: ${port}\n    uuid: ${cfg.uuid}\n    udp: true\n    tls: true\n    servername: ${cfg.host}\n    client-fingerprint: chrome\n    network: ws\n    ws-opts:\n      path: ${cfg.path || '/'}\n      headers:\n        Host: ${cfg.host}\n`;
   });
   clash += `\nproxy-groups:\n  - name: "优选"\n    type: url-test\n    proxies:\n${ips.map(({label}) => `      - "${label}"`).join('\n')}\n    url: https://www.gstatic.com/generate_204\n    interval: 300\n\nrules:\n  - MATCH,优选\n`;
   document.getElementById('out-clash').value = clash;
@@ -270,6 +290,43 @@ function clearIPs() {
 }
 
 loadConfig();
+loadLocalNodes();
+
+// ---------- 本机 sb-onekey 节点 ----------
+async function loadLocalNodes() {
+  const box = document.getElementById('localNodes');
+  try {
+    const resp = await fetch('/api/nodes');
+    const data = await resp.json();
+    if (!data.sb_installed) {
+      box.innerHTML = '<p class="hint">本机未安装 sb-onekey，可用下方订阅 URL 导入或手动填写。</p>';
+      return;
+    }
+    if (!data.nodes.length) {
+      box.innerHTML = '<p class="hint">本机 sb-onekey 还没有 VLESS+WS(+TLS) 节点，先去脚本里建一个。</p>';
+      return;
+    }
+    let html = '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+    data.nodes.forEach((n, i) => {
+      html += `<button class="btn btn-gray btn-sm" onclick='selectLocalNode(${JSON.stringify(n).replace(/'/g,"&#39;")})'>${n.name} <span style="color:#999">:${n.port}</span></button>`;
+    });
+    html += '</div><p class="hint">点击节点自动填入下方表单</p>';
+    box.innerHTML = html;
+  } catch(e) {
+    box.innerHTML = '<p class="hint">无法读取本机节点（' + e.message + '），可用订阅 URL 导入。</p>';
+  }
+}
+function selectLocalNode(n) {
+  document.getElementById('uuid').value = n.uuid || '';
+  document.getElementById('host').value = n.host || '';
+  document.getElementById('port').value = n.port || '443';
+  document.getElementById('path').value = n.path || '/';
+  const info = document.getElementById('nodeInfo');
+  info.classList.remove('hidden');
+  info.innerHTML = `✅ 已选择本机节点 <b>${n.name}</b>（${n.proto}，创建于 ${n.created || '未知'}）`;
+  saveConfig(true);
+  document.getElementById('nodeInfo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 </script>
 </body>
 </html>
