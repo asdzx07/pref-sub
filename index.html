@@ -7,122 +7,142 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #333; padding: 20px; }
-  .container { max-width: 900px; margin: 0 auto; }
-  h1 { color: #e8912d; margin-bottom: 6px; font-size: 24px; }
-  .subtitle { color: #888; margin-bottom: 20px; font-size: 14px; }
-  .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .container { max-width: 960px; margin: 0 auto; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .header h1 { color: #e8912d; font-size: 26px; }
+  .header p { color: #888; font-size: 13px; margin-top: 4px; }
+  .card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
   .card h2 { font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-  .row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-  .field { flex: 1; min-width: 200px; }
-  .field label { display: block; font-size: 13px; color: #666; margin-bottom: 4px; }
-  .field input, .field textarea, .field select { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-  .field textarea { min-height: 120px; font-family: monospace; font-size: 13px; resize: vertical; }
-  .btn { padding: 9px 20px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
-  .btn-primary { background: #e8912d; color: #fff; }
-  .btn-primary:hover { background: #d1801f; }
+  .card h2 .spacer { flex: 1; }
+  .row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .field { flex: 1; min-width: 180px; }
+  .field label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; }
+  .field input, .field textarea { width: 100%; padding: 10px 13px; border: 1px solid #e0e0e0; border-radius: 9px; font-size: 14px; background: #fafbfc; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: #e8912d; background: #fff; }
+  .field textarea { min-height: 130px; font-family: Consolas, monospace; font-size: 13px; resize: vertical; }
+  .btn { padding: 10px 22px; border: none; border-radius: 9px; font-size: 14px; cursor: pointer; font-weight: 500; }
+  .btn-orange { background: #e8912d; color: #fff; }
+  .btn-orange:hover { background: #d1801f; }
   .btn-blue { background: #1a9bf0; color: #fff; }
+  .btn-blue:hover { background: #0d8ae0; }
   .btn-green { background: #22b573; color: #fff; }
-  .btn-gray { background: #eee; color: #666; }
-  .output-box { background: #f8f9fb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-  .output-box .label { font-size: 13px; font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-  .output-box textarea { width: 100%; min-height: 80px; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: monospace; font-size: 12px; background: #fff; }
-  .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
-  .hint { font-size: 12px; color: #999; margin-top: 4px; }
-  #qrcode { text-align: center; padding: 10px; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-  .tab { padding: 8px 16px; border-radius: 8px; background: #eee; cursor: pointer; font-size: 14px; border: none; }
-  .tab.active { background: #e8912d; color: #fff; }
+  .btn-green:hover { background: #1a9e63; }
+  .btn-gray { background: #f0f1f4; color: #666; }
+  .btn-gray:hover { background: #e2e4e8; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 7px; }
+  .hint { font-size: 12px; color: #999; margin-top: 6px; }
+  .sub-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .sub-row .name { width: 110px; font-size: 14px; font-weight: 500; flex-shrink: 0; }
+  .sub-row input { flex: 1; padding: 9px 13px; border: 1px solid #e0e0e0; border-radius: 9px; font-size: 13px; background: #fafbfc; font-family: Consolas, monospace; }
+  .sub-row .actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .node-chips { display: flex; gap: 8px; flex-wrap: wrap; }
   .hidden { display: none; }
-  .node-info { background: #f0f7ff; border: 1px solid #cfe3ff; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; }
+  .ok-msg { background: #e8f8f0; color: #1a9e63; padding: 8px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+  .warn-msg { background: #fff7e8; color: #b7791f; padding: 8px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+  #qrcodeBox { text-align: center; padding: 12px; }
+  .divider { border: none; border-top: 1px solid #f0f0f0; margin: 16px 0; }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>🚀 优选 IP 订阅生成器</h1>
-  <p class="subtitle">为 VLESS+WS+TLS 节点批量生成优选 IP 订阅 · 配置保存在浏览器本地</p>
+  <div class="header">
+    <div>
+      <h1>🚀 优选 IP 订阅生成器</h1>
+      <p>为 VLESS+WS+TLS 节点批量生成优选 IP 订阅 · v1.1</p>
+    </div>
+  </div>
 
   <!-- 本机节点 -->
-  <div class="card" id="localNodesCard">
-    <h2>🖥️ 本机 sb-onekey 节点 <button class="btn btn-gray btn-sm" onclick="loadLocalNodes()">🔄 刷新</button></h2>
+  <div class="card">
+    <h2>🖥️ 本机 sb-onekey 节点 <span class="spacer"></span><button class="btn btn-gray btn-sm" onclick="loadLocalNodes()">🔄 刷新</button></h2>
     <div id="localNodes"><p class="hint">正在加载…</p></div>
   </div>
 
   <!-- 节点配置 -->
   <div class="card">
     <h2>📝 节点配置</h2>
+    <div id="saveMsg"></div>
+    <div class="row">
+      <div class="field"><label>UUID</label><input id="uuid" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
+      <div class="field"><label>域名 (HOST / SNI)</label><input id="host" placeholder="example.com"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>端口</label><input id="port" value="443"></div>
+      <div class="field"><label>WS 路径</label><input id="path" placeholder="/xxx"></div>
+      <div class="field"><label>订阅名称</label><input id="subName" value="优选"></div>
+    </div>
     <div class="row">
       <div class="field">
-        <label>订阅 URL（sb-onekey 的 v2rayn 订阅地址，一键导入）</label>
-        <input type="text" id="subUrl" placeholder="http://IP:端口/token/v2rayn">
-      </div>
-      <div class="field" style="flex:0; align-self:flex-end;">
-        <button class="btn btn-blue" onclick="importFromSub()">导入</button>
+        <label>优选 IP 列表（一行一个，格式：<code>IP:端口#备注</code>）</label>
+        <textarea id="ipList" placeholder="104.16.0.1:443#电信优选&#10;172.67.0.1:8443#联通优选&#10;162.159.0.1"></textarea>
       </div>
     </div>
-    <div class="node-info hidden" id="nodeInfo"></div>
     <div class="row">
-      <div class="field"><label>UUID</label><input type="text" id="uuid" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
-      <div class="field"><label>域名 (HOST / SNI)</label><input type="text" id="host" placeholder="example.com"></div>
-    </div>
-    <div class="row">
-      <div class="field"><label>端口</label><input type="text" id="port" value="443"></div>
-      <div class="field"><label>WS 路径</label><input type="text" id="path" placeholder="/xxxx"></div>
-      <div class="field"><label>订阅名称</label><input type="text" id="subName" value="pref-ip"></div>
-    </div>
-    <div class="row">
-      <button class="btn btn-gray" onclick="saveConfig()">💾 保存配置</button>
-      <span class="hint">配置自动保存到浏览器，下次打开直接用</span>
+      <button class="btn btn-orange" onclick="saveAll()">💾 保存配置</button>
+      <span class="hint">保存到服务器，订阅链接实时生效</span>
     </div>
   </div>
 
-  <!-- 优选 IP -->
+  <!-- 订阅链接 -->
   <div class="card">
-    <h2>⚡️ 优选 IP 列表</h2>
-    <div class="field">
-      <label>一行一个，格式：<code>IP:端口#备注</code>（端口默认443，备注可选）</label>
-      <textarea id="ipList" placeholder="104.16.0.1:443#电信优选&#10;172.67.0.1:8443#联通优选&#10;162.159.0.1"></textarea>
+    <h2>📋 订阅链接 <span class="spacer"></span><button class="btn btn-gray btn-sm" onclick="refreshSubUrls()">🔄 刷新</button></h2>
+    <p class="hint" style="margin-bottom:12px;">把下面的链接填到 Clash Verge Rev / v2rayN / SFA 里当订阅用，改了优选 IP 后点保存即生效，不用重新复制</p>
+    <div class="sub-row">
+      <span class="name">VLESS 明文</span>
+      <input id="url-vless" readonly onclick="this.select()">
+      <div class="actions"><button class="btn btn-blue btn-sm" onclick="copyUrl('url-vless')">复制</button><button class="btn btn-gray btn-sm" onclick="showQR('url-vless')">二维码</button></div>
     </div>
-    <div class="row" style="margin-top:10px;">
-      <button class="btn btn-green" onclick="generate()">⚡️ 生成订阅</button>
-      <button class="btn btn-gray" onclick="clearIPs()">清空</button>
+    <div class="sub-row">
+      <span class="name">Base64 订阅</span>
+      <input id="url-base64" readonly onclick="this.select()">
+      <div class="actions"><button class="btn btn-blue btn-sm" onclick="copyUrl('url-base64')">复制</button><button class="btn btn-gray btn-sm" onclick="showQR('url-base64')">二维码</button></div>
     </div>
-  </div>
-
-  <!-- 输出 -->
-  <div class="card hidden" id="outputCard">
-    <h2>📋 生成结果 <span id="nodeCount" style="font-size:13px;color:#888;"></span></h2>
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('vless')">VLESS 链接</button>
-      <button class="tab" onclick="showTab('base64')">Base64 订阅</button>
-      <button class="tab" onclick="showTab('clash')">Clash 订阅</button>
-      <button class="tab" onclick="showTab('singbox')">sing-box 订阅</button>
+    <div class="sub-row">
+      <span class="name">Clash 订阅</span>
+      <input id="url-clash" readonly onclick="this.select()">
+      <div class="actions"><button class="btn btn-blue btn-sm" onclick="copyUrl('url-clash')">复制</button><button class="btn btn-gray btn-sm" onclick="showQR('url-clash')">二维码</button></div>
     </div>
-    <div class="output-box" id="tab-vless">
-      <div class="label">VLESS 链接 <button class="btn btn-blue btn-sm" onclick="copyText('out-vless')">复制</button></div>
-      <textarea id="out-vless" readonly></textarea>
+    <div class="sub-row">
+      <span class="name">sing-box 订阅</span>
+      <input id="url-singbox" readonly onclick="this.select()">
+      <div class="actions"><button class="btn btn-blue btn-sm" onclick="copyUrl('url-singbox')">复制</button><button class="btn btn-gray btn-sm" onclick="showQR('url-singbox')">二维码</button></div>
     </div>
-    <div class="output-box hidden" id="tab-base64">
-      <div class="label">Base64 订阅内容 <button class="btn btn-blue btn-sm" onclick="copyText('out-base64')">复制</button></div>
-      <textarea id="out-base64" readonly></textarea>
-      <div id="qrcode"></div>
-    </div>
-    <div class="output-box hidden" id="tab-clash">
-      <div class="label">Clash YAML <button class="btn btn-blue btn-sm" onclick="copyText('out-clash')">复制</button></div>
-      <textarea id="out-clash" readonly style="min-height:200px;"></textarea>
-    </div>
-    <div class="output-box hidden" id="tab-singbox">
-      <div class="label">sing-box JSON <button class="btn btn-blue btn-sm" onclick="copyText('out-singbox')">复制</button></div>
-      <textarea id="out-singbox" readonly style="min-height:200px;"></textarea>
-    </div>
+    <div id="qrcodeBox" class="hidden"></div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
-// ---------- 配置存取 ----------
-function loadConfig() {
+const base = location.origin;
+
+// ---------- 本机节点 ----------
+async function loadLocalNodes() {
+  const box = document.getElementById('localNodes');
   try {
-    const c = JSON.parse(localStorage.getItem('prefsub_config') || '{}');
+    const r = await fetch('/api/nodes');
+    const d = await r.json();
+    if (!d.sb_installed) { box.innerHTML = '<p class="hint">本机未安装 sb-onekey，请手动填写下方配置。</p>'; return; }
+    if (!d.nodes.length) { box.innerHTML = '<p class="hint">本机还没有 VLESS+WS(+TLS) 节点。</p>'; return; }
+    box.innerHTML = '<div class="node-chips">' + d.nodes.map(n =>
+      `<button class="btn btn-gray btn-sm" onclick='pickNode(${JSON.stringify(n).replace(/'/g, "&#39;")})'>${n.name}</button>`
+    ).join('') + '</div>';
+  } catch(e) {
+    box.innerHTML = '<p class="hint">读取失败：' + e.message + '</p>';
+  }
+}
+function pickNode(n) {
+  document.getElementById('uuid').value = n.uuid || '';
+  document.getElementById('host').value = n.host || '';
+  document.getElementById('port').value = n.port || '443';
+  document.getElementById('path').value = n.path || '/';
+  msg('已填入节点 <b>' + n.name + '</b>，记得点保存', 'ok');
+}
+
+// ---------- 配置存取 ----------
+async function loadSaved() {
+  try {
+    const r = await fetch('/api/config');
+    const c = await r.json();
     if (c.uuid) document.getElementById('uuid').value = c.uuid;
     if (c.host) document.getElementById('host').value = c.host;
     if (c.port) document.getElementById('port').value = c.port;
@@ -131,202 +151,53 @@ function loadConfig() {
     if (c.ipList) document.getElementById('ipList').value = c.ipList;
   } catch(e) {}
 }
-function saveConfig(silent) {
-  const c = {
+function collect() {
+  return {
     uuid: document.getElementById('uuid').value.trim(),
     host: document.getElementById('host').value.trim(),
     port: document.getElementById('port').value.trim() || '443',
-    path: document.getElementById('path').value.trim(),
-    subName: document.getElementById('subName').value.trim() || 'pref-ip',
-    ipList: document.getElementById('ipList').value
+    path: document.getElementById('path').value.trim() || '/',
+    subName: document.getElementById('subName').value.trim() || '优选',
+    ipList: document.getElementById('ipList').value,
   };
-  localStorage.setItem('prefsub_config', JSON.stringify(c));
-  if (!silent) alert('已保存');
-  return c;
+}
+async function saveAll() {
+  const c = collect();
+  if (!c.uuid || !c.host) { msg('请先填写 UUID 和域名', 'warn'); return; }
+  if (!c.ipList.trim()) { msg('请填写优选 IP 列表', 'warn'); return; }
+  const r = await fetch('/api/save', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(c) });
+  const d = await r.json();
+  if (d.ok) { msg('✅ 已保存，订阅链接已生效', 'ok'); refreshSubUrls(); }
+  else msg('保存失败', 'warn');
+}
+function msg(t, cls) {
+  document.getElementById('saveMsg').innerHTML = `<div class="${cls === 'ok' ? 'ok-msg' : 'warn-msg'}">${t}</div>`;
+  setTimeout(() => document.getElementById('saveMsg').innerHTML = '', 4000);
 }
 
-// ---------- 从订阅导入 ----------
-async function importFromSub() {
-  const url = document.getElementById('subUrl').value.trim();
-  if (!url) { alert('请先填写订阅 URL'); return; }
-  // https 页面抓 http 订阅会被浏览器安全策略拦截（Mixed Content），提前拦截给明确提示
-  if (location.protocol === 'https:' && url.startsWith('http://')) {
-    alert('浏览器会拦截 https 页面抓取 http 订阅。\n\n两种办法：\n1. 给 sb-onekey 的订阅服务套 https 再填进来；\n2. 手动填写下面的 UUID / 域名 / 路径（只需要填一次，浏览器会记住）。');
-    return;
-  }
-  try {
-    const resp = await fetch(url);
-    const text = await resp.text();
-    // 尝试 base64 解码
-    let decoded = text;
-    try { decoded = atob(text.trim()); } catch(e) {}
-    const lines = decoded.split('\n').map(l => l.trim()).filter(l => l.startsWith('vless://'));
-    if (!lines.length) { alert('订阅中没有找到 vless 链接'); return; }
-    // 优先选 type=ws 的那条（优选 IP 场景就是 VLESS+WS+TLS），找不到再用第 1 条
-    const link = lines.find(l => /[?&]type=ws([&#]|$)/.test(l)) || lines[0];
-    // host 支持 [IPv6] 方括号形式
-    const m = link.match(/^vless:\/\/([^@]+)@(\[[^\]]+\]|[^:\/?#]+):(\d+)\/?\?([^#]*)#?(.*)$/);
-    if (!m) { alert('解析失败'); return; }
-    const params = new URLSearchParams(m[4]);
-    document.getElementById('uuid').value = m[1];
-    document.getElementById('port').value = m[3];
-    document.getElementById('path').value = params.get('path') || '/';
-    // host/sni 优先用 sni 参数
-    document.getElementById('host').value = params.get('sni') || params.get('host') || m[2];
-    const info = document.getElementById('nodeInfo');
-    info.classList.remove('hidden');
-    info.innerHTML = `✅ 已导入 ${lines.length} 个节点（使用第 ${lines.indexOf(link)+1} 个的参数）：UUID=${m[1].substring(0,8)}... host=${params.get('sni')||m[2]} path=${params.get('path')||'/'}`;
-    saveConfig(true);
-  } catch(e) {
-    alert('导入失败：' + e.message + '\n（如是跨域问题，请手动填写）');
-  }
-}
-
-// ---------- 解析 IP 列表 ----------
-function parseIPs() {
-  const text = document.getElementById('ipList').value;
-  const result = [];
-  for (const line of text.split('\n')) {
-    const t = line.trim();
-    if (!t || t.startsWith('#')) continue;
-    // 格式：IP:端口#备注 或 IP#备注 或 IP:端口 或 IP
-    let addr = t, label = '';
-    const hashIdx = t.indexOf('#');
-    if (hashIdx >= 0) { addr = t.substring(0, hashIdx).trim(); label = t.substring(hashIdx+1).trim(); }
-    let ip = addr, port = document.getElementById('port').value.trim() || '443';
-    const colonIdx = addr.lastIndexOf(':');
-    // 处理 IPv6（方括号）简单情况
-    if (colonIdx > 0 && !addr.endsWith(']')) {
-      const maybePort = addr.substring(colonIdx+1);
-      if (/^\d+$/.test(maybePort)) { ip = addr.substring(0, colonIdx); port = maybePort; }
-    }
-    if (!label) label = ip;
-    result.push({ ip, port, label });
-  }
-  return result;
-}
-
-// ---------- 生成 ----------
-function generate() {
-  const cfg = saveConfig(true);
-  if (!cfg.uuid || !cfg.host) { alert('请先填写 UUID 和域名'); return; }
-  const ips = parseIPs();
-  if (!ips.length) { alert('请先填写优选 IP 列表'); return; }
-
-  // VLESS 链接
-  // 注意：path 里的 / 保持原样不做 URL 编码（%2F 会被某些客户端误解析，见 2026-10-15 spx 教训）
-  const encNoSlash = s => encodeURIComponent(s).replace(/%2F/gi, '/');
-  const vlessLinks = ips.map(({ip, port, label}) => {
-    const qs = 'security=tls'
-      + '&sni=' + encodeURIComponent(cfg.host)
-      + '&type=ws'
-      + '&path=' + encNoSlash(cfg.path || '/')
-      + '&host=' + encodeURIComponent(cfg.host)
-      + '&fp=chrome&encryption=none';
-    return `vless://${cfg.uuid}@${ip}:${port}?${qs}#${encodeURIComponent(label)}`;
-  });
-
-  document.getElementById('out-vless').value = vlessLinks.join('\n');
-  document.getElementById('nodeCount').textContent = `共 ${ips.length} 个节点`;
-
-  // Base64
-  const b64 = btoa(unescape(encodeURIComponent(vlessLinks.join('\n'))));
-  document.getElementById('out-base64').value = b64;
-
-  // 二维码：优先完整 Base64 订阅，太长放不下则退到第一条 vless 链接
-  document.getElementById('qrcode').innerHTML = '';
-  try {
-    new QRCode(document.getElementById('qrcode'), { text: b64, width: 160, height: 160 });
-  } catch(e) {
-    try {
-      document.getElementById('qrcode').innerHTML = '';
-      new QRCode(document.getElementById('qrcode'), { text: vlessLinks[0], width: 160, height: 160 });
-    } catch(e2) {}
-  }
-
-  // Clash
-  let clash = 'proxies:\n';
-  ips.forEach(({ip, port, label}, i) => {
-    clash += `  - name: "${label}"\n    type: vless\n    server: ${ip}\n    port: ${port}\n    uuid: ${cfg.uuid}\n    udp: true\n    tls: true\n    servername: ${cfg.host}\n    client-fingerprint: chrome\n    network: ws\n    ws-opts:\n      path: ${cfg.path || '/'}\n      headers:\n        Host: ${cfg.host}\n`;
-  });
-  clash += `\nproxy-groups:\n  - name: "优选"\n    type: url-test\n    proxies:\n${ips.map(({label}) => `      - "${label}"`).join('\n')}\n    url: https://www.gstatic.com/generate_204\n    interval: 300\n\nrules:\n  - MATCH,优选\n`;
-  document.getElementById('out-clash').value = clash;
-
-  // sing-box
-  const outbounds = ips.map(({ip, port, label}) => ({
-    type: 'vless', tag: label, server: ip, server_port: parseInt(port),
-    uuid: cfg.uuid,
-    tls: { enabled: true, server_name: cfg.host, utls: { enabled: true, fingerprint: 'chrome' } },
-    transport: { type: 'ws', path: cfg.path || '/', headers: { Host: cfg.host } }
-  }));
-  outbounds.push({ type: 'direct', tag: 'direct' });
-  const sb = {
-    log: { level: 'info' },
-    outbounds,
-    route: { rules: [], final: outbounds[0].tag }
-  };
-  document.getElementById('out-singbox').value = JSON.stringify(sb, null, 2);
-
-  document.getElementById('outputCard').classList.remove('hidden');
-  showTab('vless');
-  document.getElementById('outputCard').scrollIntoView({ behavior: 'smooth' });
-}
-
-function showTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  ['vless','base64','clash','singbox'].forEach(n => {
-    document.getElementById('tab-'+n).classList.toggle('hidden', n !== name);
+// ---------- 订阅链接 ----------
+function refreshSubUrls() {
+  ['vless','base64','clash','singbox'].forEach(k => {
+    document.getElementById('url-' + k).value = base + '/sub/' + k;
   });
 }
-function copyText(id) {
+function copyUrl(id) {
   const el = document.getElementById(id);
   el.select();
   document.execCommand('copy');
-  alert('已复制');
+  msg('已复制', 'ok');
 }
-function clearIPs() {
-  if (confirm('清空优选 IP 列表？')) document.getElementById('ipList').value = '';
+function showQR(id) {
+  const box = document.getElementById('qrcodeBox');
+  box.classList.remove('hidden');
+  box.innerHTML = '';
+  new QRCode(box, { text: document.getElementById(id).value, width: 160, height: 160 });
+  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-loadConfig();
 loadLocalNodes();
-
-// ---------- 本机 sb-onekey 节点 ----------
-async function loadLocalNodes() {
-  const box = document.getElementById('localNodes');
-  try {
-    const resp = await fetch('/api/nodes');
-    const data = await resp.json();
-    if (!data.sb_installed) {
-      box.innerHTML = '<p class="hint">本机未安装 sb-onekey，可用下方订阅 URL 导入或手动填写。</p>';
-      return;
-    }
-    if (!data.nodes.length) {
-      box.innerHTML = '<p class="hint">本机 sb-onekey 还没有 VLESS+WS(+TLS) 节点，先去脚本里建一个。</p>';
-      return;
-    }
-    let html = '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
-    data.nodes.forEach((n, i) => {
-      html += `<button class="btn btn-gray btn-sm" onclick='selectLocalNode(${JSON.stringify(n).replace(/'/g,"&#39;")})'>${n.name} <span style="color:#999">:${n.port}</span></button>`;
-    });
-    html += '</div><p class="hint">点击节点自动填入下方表单</p>';
-    box.innerHTML = html;
-  } catch(e) {
-    box.innerHTML = '<p class="hint">无法读取本机节点（' + e.message + '），可用订阅 URL 导入。</p>';
-  }
-}
-function selectLocalNode(n) {
-  document.getElementById('uuid').value = n.uuid || '';
-  document.getElementById('host').value = n.host || '';
-  document.getElementById('port').value = n.port || '443';
-  document.getElementById('path').value = n.path || '/';
-  const info = document.getElementById('nodeInfo');
-  info.classList.remove('hidden');
-  info.innerHTML = `✅ 已选择本机节点 <b>${n.name}</b>（${n.proto}，创建于 ${n.created || '未知'}）`;
-  saveConfig(true);
-  document.getElementById('nodeInfo').scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
+loadSaved();
+refreshSubUrls();
 </script>
 </body>
 </html>
